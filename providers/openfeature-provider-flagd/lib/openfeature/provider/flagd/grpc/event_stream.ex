@@ -50,9 +50,7 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStream do
   end
 
   def start_link(%Client{provider: provider}) do
-    Logger.error(
-      "EventStream.start_link/1 called with client that doesn't use the gRPC provider: #{inspect(provider)}"
-    )
+    Logger.error("EventStream.start_link/1 called with client that doesn't use the gRPC provider: #{inspect(provider)}")
 
     :error
   end

@@ -1,0 +1,77 @@
+name: CI Jobs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+
+jobs:
+  ci-checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        elixir-otp:
+          - elixir: "1.14"
+            otp: "24.3"
+          - elixir: "1.17"
+            otp: "27.0"
+          - elixir: "1.18"
+            otp: "27.0"
+            lint: true
+        package:
+          - "providers/openfeature-provider-flagd"
+    env:
+      MIX_ENV: test
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Elixir and OTP
+        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451 # v1
+        with:
+          otp-version: ${{ matrix.elixir-otp.otp }}
+          elixir-version: ${{ matrix.elixir-otp.elixir }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ matrix.package }}/deps
+            ${{ matrix.package }}/_build
+          key: ${{ runner.os }}-${{ matrix.package }}-mix-${{ matrix.elixir-otp.elixir }}-${{ matrix.elixir-otp.otp }}-${{ hashFiles(format('{0}/mix.lock', matrix.package)) }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.package }}-mix-${{ matrix.elixir-otp.elixir }}-${{ matrix.elixir-otp.otp }}-
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Check formatting
+        run: mix format --check-formatted
+        if: ${{ matrix.elixir-otp.lint }}
+
+      - name: Check unused dependencies
+        run: mix deps.unlock --check-unused
+        if: ${{ matrix.elixir-otp.lint }}
+
+      - name: Compile dependencies
+        run: mix deps.compile
+
+      - name: Compile with warnings as errors
+        run: mix compile --warnings-as-errors
+        if: ${{ matrix.elixir-otp.lint }}
+
+      - name: Run Credo
+        run: mix credo --strict
+        if: ${{ matrix.elixir-otp.lint }}
+
+      - name: Run tests
+        run: mix test
+
+      - name: Run Dialyzer
+        run: mix dialyzer
+        if: ${{ matrix.elixir-otp.lint }}
