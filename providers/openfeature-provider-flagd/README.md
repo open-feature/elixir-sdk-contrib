@@ -85,4 +85,5 @@ mix proto.gen
 
 ## Roadmap
 
+- [ ] Cache resolution details
 - [ ] In-process provider using the flagd sync protocol
