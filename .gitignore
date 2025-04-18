@@ -27,3 +27,5 @@ tmp/
 
 # ElixirLS files
 .elixir_ls/
+
+.DS_Store
