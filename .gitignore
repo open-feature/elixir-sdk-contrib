@@ -1,0 +1,29 @@
+# Compiled artifacts
+_build/
+
+# Coverage assets
+cover/
+
+# Dependency sources
+deps/
+
+# Generated docs
+doc/
+
+# Mix fetch files
+.fetch
+
+# Crash dumps
+erl_crash.dump
+
+# Archive artifacts
+*.ez
+
+# Hex tarball
+open_feature*.tar*
+
+# Temp files (e.g. tests)
+tmp/
+
+# ElixirLS files
+.elixir_ls/
