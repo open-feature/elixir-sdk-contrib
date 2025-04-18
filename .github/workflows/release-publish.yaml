@@ -1,0 +1,59 @@
+name: Release Publish Jobs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-please:
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-please
+        uses: googleapis/release-please-action@a02a34c4d625f9be7cb89156071d8567266a2445 # v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-to-hex:
+    needs: release-please
+    runs-on: ubuntu-latest
+    if: ${{ needs.release-please.outputs.release_created }}
+    strategy:
+      matrix:
+        path: ${{ fromJSON(needs.release-please.outputs.paths_released || '[]') }}
+    environment: publish
+    defaults:
+      run:
+        working-directory: ${{ matrix.path }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451 # v1
+        with:
+          otp-version: "27.0"
+          elixir-version: "1.18"
+
+      - name: Run mix deps.get
+        run: mix deps.get --only docs
+
+      - name: Run mix deps.compile
+        run: mix deps.compile
+
+      - name: Run mix compile
+        run: mix compile
+        env:
+          MIX_ENV: docs
+
+      - name: Run mix hex.publish
+        run: mix hex.publish --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+          MIX_ENV: docs

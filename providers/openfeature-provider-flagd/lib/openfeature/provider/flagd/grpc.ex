@@ -145,11 +145,9 @@ defmodule OpenFeature.Provider.Flagd.GRPC do
   def resolve_number_value(provider, key, default, context) do
     {fun, request} =
       if is_integer(default) do
-        {:resolve_int,
-         %Eval.ResolveIntRequest{flag_key: key, context: to_protobuf_struct(context)}}
+        {:resolve_int, %Eval.ResolveIntRequest{flag_key: key, context: to_protobuf_struct(context)}}
       else
-        {:resolve_float,
-         %Eval.ResolveFloatRequest{flag_key: key, context: to_protobuf_struct(context)}}
+        {:resolve_float, %Eval.ResolveFloatRequest{flag_key: key, context: to_protobuf_struct(context)}}
       end
 
     case apply(Eval.Service.Stub, fun, [provider.channel, request]) do
