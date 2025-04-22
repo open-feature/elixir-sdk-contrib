@@ -7,27 +7,31 @@ on:
 
 jobs:
   release-please:
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      paths_released: ${{ steps.release.outputs.paths_released }}
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for googleapis/release-please-action to create release commit
+      pull-requests: write # for googleapis/release-please-action to create release PR
+    # Release-please creates a PR that tracks all changes
     steps:
-      - name: Run release-please
-        uses: googleapis/release-please-action@a02a34c4d625f9be7cb89156071d8567266a2445 # v4
+      - uses: googleapis/release-please-action@a02a34c4d625f9be7cb89156071d8567266a2445 # v4
         id: release
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
+          token: ${{secrets.GITHUB_TOKEN}}
+          target-branch: main
+      - name: Dump Release Please Output
+        env:
+          RELEASE_PLEASE_OUTPUT: ${{ toJson(steps.release.outputs) }}
+        run: |
+          echo "$RELEASE_PLEASE_OUTPUT"
+    outputs:
+      release_created: ${{ steps.release.outputs.releases_created }}
+      all: ${{ toJSON(steps.release.outputs) }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
 
   publish-to-hex:
     needs: release-please
     runs-on: ubuntu-latest
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ fromJSON(needs.release-please.outputs.release_created || false) }}
     strategy:
       matrix:
         path: ${{ fromJSON(needs.release-please.outputs.paths_released || '[]') }}
