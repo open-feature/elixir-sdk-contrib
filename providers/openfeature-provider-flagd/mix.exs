@@ -47,7 +47,8 @@ defmodule FlagdProvider.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md", "../../LICENSE", "../../CONTRIBUTING.md", "CHANGELOG.md"]
+      extras: ["README.md", "../../LICENSE", "../../CONTRIBUTING.md", "CHANGELOG.md"],
+      skip_undefined_reference_warnings_on: ["OpenFeature.Provider.Flagd.GRPC.EventStream"]
     ]
   end
 
