@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/open-feature/elixir-sdk-contrib/compare/openfeature-provider-flagd/v0.1.0...openfeature-provider-flagd/v0.1.1) (2025-04-23)
+
+
+### 🧹 Chore
+
+* skip undefined reference warnings in EventStream ([#7](https://github.com/open-feature/elixir-sdk-contrib/issues/7)) ([bf74489](https://github.com/open-feature/elixir-sdk-contrib/commit/bf74489d213ed5af44f9947c1ba8396c20be2cfa))
+
 ## [0.1.0](https://github.com/open-feature/elixir-sdk-contrib/compare/openfeature-provider-flagd/v0.1.0...openfeature-provider-flagd/v0.1.0) (2025-04-22)
 
 
