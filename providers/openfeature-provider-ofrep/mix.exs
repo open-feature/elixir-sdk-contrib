@@ -1,7 +1,7 @@
 defmodule OpenFeature.Provider.OFREP.MixProject do
   use Mix.Project
 
-  @git_repo "https://github.com/open-feature/elixir-sdk-contrib/providers/openfeature-provider-ofrep"
+  @git_repo "https://github.com/open-feature/elixir-sdk-contrib"
 
   @version "0.1.0"
 
