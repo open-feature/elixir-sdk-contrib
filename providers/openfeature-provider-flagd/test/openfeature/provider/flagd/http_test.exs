@@ -184,9 +184,30 @@ defmodule OpenFeature.Provider.Flagd.HTTPTest do
     end)
 
     {:ok, provider} = FlagdHTTP.initialize(provider, "test", %{})
-    assert {:ok, result} = FlagdHTTP.resolve_number_value(provider, "pi", 0, %{})
+    assert {:ok, result} = FlagdHTTP.resolve_number_value(provider, "pi", 0.0, %{})
     assert result.value == 3.14
     assert result.variant == "pi"
+  end
+
+  test "successfully resolves number flag (int)", %{provider: provider} do
+    expect(Req.Request, :run_request, fn _req ->
+      {
+        %Req.Request{},
+        %Req.Response{
+          status: 200,
+          body: %{
+            "value" => 42,
+            "variant" => "default",
+            "reason" => "STATIC"
+          }
+        }
+      }
+    end)
+
+    {:ok, provider} = FlagdHTTP.initialize(provider, "test", %{})
+    assert {:ok, result} = FlagdHTTP.resolve_number_value(provider, "number-flag", 0, %{})
+    assert result.value == 42
+    assert result.variant == "default"
   end
 
   test "successfully resolves map flag", %{provider: provider} do
