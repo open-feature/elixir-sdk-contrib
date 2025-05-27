@@ -1,4 +1,4 @@
-defmodule OpenFeature.Provider.Flagd.MixProject do
+defmodule FlagdProvider.MixProject do
   use Mix.Project
 
   @git_repo "https://github.com/open-feature/elixir-sdk-contrib"
@@ -57,7 +57,7 @@ defmodule OpenFeature.Provider.Flagd.MixProject do
       licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => @git_repo,
-        "Changelog" => "https://hexdocs.pm/open_feature_provider_flagd/changelog.html"
+        "Changelog" => "https://hexdocs.pm/open_feature_flagd_provider/changelog.html"
       }
     ]
   end
