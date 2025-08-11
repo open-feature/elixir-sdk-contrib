@@ -29,7 +29,7 @@ jobs:
         working-directory: ${{ matrix.package }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Elixir and OTP
         uses: erlef/setup-beam@8aa8a857c6be0daae6e97272bb299d5b942675a4 # v1

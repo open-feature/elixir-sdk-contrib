@@ -40,7 +40,7 @@ jobs:
       run:
         working-directory: ${{ matrix.path }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: erlef/setup-beam@8aa8a857c6be0daae6e97272bb299d5b942675a4 # v1
         with:
