@@ -45,8 +45,16 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStream do
   alias Protobuf.JSON.Encode
 
   @spec start_link(Client.t()) :: GenServer.on_start()
-  def start_link(%Client{provider: %FlagdGRPC{channel: channel, domain: domain}}) do
+  def start_link(%Client{provider: %FlagdGRPC{channel: %GRPC.Channel{} = channel, domain: domain}}) do
     GenServer.start_link(__MODULE__, %{channel: channel, domain: domain})
+  end
+
+  def start_link(%Client{provider: %FlagdGRPC{} = provider}) do
+    Logger.error(
+      "EventStream.start_link/1 requires an initialized gRPC provider with a valid channel. Got: #{inspect(provider)}"
+    )
+
+    :error
   end
 
   def start_link(%Client{provider: provider}) do
