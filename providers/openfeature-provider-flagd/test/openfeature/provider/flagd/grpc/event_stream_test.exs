@@ -18,27 +18,24 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStreamTest do
     Decode.from_json_data(map, Google.Protobuf.Struct)
   end
 
-  setup do
-    expect(GRPC.Stub, :connect, fn _target, _opts -> {:ok, :channel} end)
-
-    provider = FlagdGRPC.new(port: 8013, domain: "test-domain")
-
-    {:ok, _} = OpenFeature.set_provider("test-domain", provider)
-    client = OpenFeature.get_client("test-domain")
-
-    {:ok, client: client, provider: provider}
-  end
-
-  test "starts stream and emits :ready", %{client: client} do
+  test "starts stream and emits :ready" do
     test_pid = self()
 
     msg = %EventStreamResponse{type: "provider_ready"}
+
+    expect(GRPC.Stub, :connect, fn _target, _opts -> {:ok, %GRPC.Channel{}} end)
+
+    domain = "test-domain-#{System.unique_integer([:positive])}"
+    provider = FlagdGRPC.new(port: 8013, domain: domain)
+    {:ok, _} = OpenFeature.set_provider(domain, provider)
+    client = OpenFeature.get_client(domain)
+    assert match?(%GRPC.Channel{}, client.provider.channel)
 
     expect(Stub, :event_stream, fn _channel, %EventStreamRequest{} ->
       {:ok, [{:ok, msg}]}
     end)
 
-    expect(EventEmitter, :emit, fn "test-domain", :ready, %{} ->
+    expect(EventEmitter, :emit, fn ^domain, :ready, %{} ->
       send(test_pid, :ready_emitted)
       :ok
     end)
@@ -48,7 +45,14 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStreamTest do
     assert_receive :ready_emitted, 100
   end
 
-  test "logs warning on stream failure", %{client: client} do
+  test "logs warning on stream failure" do
+    expect(GRPC.Stub, :connect, fn _target, _opts -> {:ok, %GRPC.Channel{}} end)
+    domain = "test-domain-#{System.unique_integer([:positive])}"
+    provider = FlagdGRPC.new(port: 8013, domain: domain)
+    {:ok, _} = OpenFeature.set_provider(domain, provider)
+    client = OpenFeature.get_client(domain)
+    assert match?(%GRPC.Channel{}, client.provider.channel)
+
     expect(Stub, :event_stream, fn _channel, _req -> {:error, :unavailable} end)
 
     log =
@@ -60,8 +64,15 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStreamTest do
     assert log =~ "Event stream failed to start: :unavailable"
   end
 
-  test "emits :configuration_changed", %{client: client} do
+  test "emits :configuration_changed" do
     test_pid = self()
+
+    expect(GRPC.Stub, :connect, fn _target, _opts -> {:ok, %GRPC.Channel{}} end)
+    domain = "test-domain-#{System.unique_integer([:positive])}"
+    provider = FlagdGRPC.new(port: 8013, domain: domain)
+    {:ok, _} = OpenFeature.set_provider(domain, provider)
+    client = OpenFeature.get_client(domain)
+    assert match?(%GRPC.Channel{}, client.provider.channel)
 
     msg = %EventStreamResponse{
       type: "configuration_change",
@@ -75,7 +86,7 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStreamTest do
 
     expect(Stub, :event_stream, fn _channel, _req -> {:ok, [{:ok, msg}]} end)
 
-    expect(EventEmitter, :emit, fn "test-domain",
+    expect(EventEmitter, :emit, fn ^domain,
                                    :configuration_changed,
                                    %{
                                      flag_key: "test-flag",
@@ -89,6 +100,22 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStreamTest do
     {:ok, _pid} = FlagdGRPC.EventStream.start_link(client)
 
     assert_receive :config_changed_emitted, 100
+  end
+
+  test "logs error if started with gRPC provider lacking a channel" do
+    domain = "test-domain-#{System.unique_integer([:positive])}"
+
+    bad_client = %OpenFeature.Client{
+      provider: %FlagdGRPC{domain: domain, channel: nil},
+      domain: domain
+    }
+
+    log =
+      capture_log(fn ->
+        assert :error = FlagdGRPC.EventStream.start_link(bad_client)
+      end)
+
+    assert log =~ "requires an initialized gRPC provider with a valid channel"
   end
 
   test "logs warning if started with non-GRPC client" do
