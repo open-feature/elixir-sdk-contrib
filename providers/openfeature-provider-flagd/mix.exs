@@ -3,7 +3,7 @@ defmodule OpenFeature.Provider.Flagd.MixProject do
 
   @git_repo "https://github.com/open-feature/elixir-sdk-contrib"
 
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [
