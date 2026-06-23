@@ -38,7 +38,7 @@ jobs:
           elixir-version: ${{ matrix.elixir-otp.elixir }}
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ${{ matrix.package }}/deps
