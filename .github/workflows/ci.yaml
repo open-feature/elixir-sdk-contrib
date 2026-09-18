@@ -22,6 +22,7 @@ jobs:
             lint: true
         package:
           - "providers/openfeature-provider-flagd"
+          - "providers/openfeature-provider-ofrep"
     env:
       MIX_ENV: test
     defaults:
