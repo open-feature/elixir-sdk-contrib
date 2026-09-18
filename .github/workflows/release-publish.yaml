@@ -45,7 +45,7 @@ jobs:
       - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1
         with:
           otp-version: "27.0"
-          elixir-version: "1.18"
+          elixir-version: "1.20"
 
       - name: Run mix deps.get
         run: mix deps.get --only docs
