@@ -40,7 +40,7 @@ defmodule OpenFeature.Provider.Flagd.MixProject do
       {:grpc, "~> 0.10.0"},
       {:open_feature, "~> 0.1"},
       {:mimic, "~> 2.0", only: :test, runtime: false},
-      {:req, "~> 0.5"}
+      {:req, "~> 0.7"}
     ]
   end
 
