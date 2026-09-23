@@ -37,7 +37,7 @@ defmodule OpenFeature.Provider.Flagd.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.38", only: :docs, runtime: false},
-      {:grpc, "~> 0.10.0"},
+      {:grpc, "~> 0.11.0"},
       {:open_feature, "~> 0.1"},
       {:mimic, "~> 2.0", only: :test, runtime: false},
       {:req, "~> 0.5"}
