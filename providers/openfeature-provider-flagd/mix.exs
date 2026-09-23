@@ -34,12 +34,12 @@ defmodule OpenFeature.Provider.Flagd.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.38", only: :docs, runtime: false},
+      {:credo, "== 1.7.12", only: [:dev, :test], runtime: false},
+      {:dialyxir, "== 1.4.6", only: [:dev, :test], runtime: false},
+      {:ex_doc, "== 0.38.4", only: :docs, runtime: false},
       {:grpc, "~> 0.10.0"},
       {:open_feature, "~> 0.1"},
-      {:mimic, "~> 2.0", only: :test, runtime: false},
+      {:mimic, "== 2.1.1", only: :test, runtime: false},
       {:req, "~> 0.5"}
     ]
   end
