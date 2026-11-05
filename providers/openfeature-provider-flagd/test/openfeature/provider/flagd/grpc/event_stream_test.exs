@@ -12,10 +12,10 @@ defmodule OpenFeature.Provider.Flagd.GRPC.EventStreamTest do
   alias Flagd.Evaluation.V1.Service.Stub
   alias OpenFeature.EventEmitter
   alias OpenFeature.Provider.Flagd.GRPC, as: FlagdGRPC
-  alias Protobuf.JSON.Decode
 
   defp json_struct(map) do
-    Decode.from_json_data(map, Google.Protobuf.Struct)
+    {:ok, struct} = Protobuf.JSON.from_decoded(map, Google.Protobuf.Struct)
+    struct
   end
 
   test "starts stream and emits :ready" do
