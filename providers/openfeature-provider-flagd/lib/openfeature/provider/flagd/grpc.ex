@@ -14,7 +14,6 @@ defmodule OpenFeature.Provider.Flagd.GRPC do
   alias Google.Protobuf.Struct
   alias OpenFeature.Provider.Flagd.Reason
   alias OpenFeature.ResolutionDetails
-  alias Protobuf.JSON.Decode
   alias Protobuf.JSON.Encode
 
   defstruct name: "FlagdGRPC",
@@ -213,9 +212,12 @@ defmodule OpenFeature.Provider.Flagd.GRPC do
   defp decode_struct_value(val), do: val
 
   defp to_protobuf_struct(context) do
-    context
-    |> Enum.map(fn {k, v} -> {to_string(k), v} end)
-    |> Enum.into(%{})
-    |> Decode.from_json_data(Google.Protobuf.Struct)
+    {:ok, struct} =
+      context
+      |> Enum.map(fn {k, v} -> {to_string(k), v} end)
+      |> Enum.into(%{})
+      |> Protobuf.JSON.from_decoded(Google.Protobuf.Struct)
+
+    struct
   end
 end
